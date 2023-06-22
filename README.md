@@ -2,7 +2,6 @@
 
 : by Jens Geisler, Adam Shelly  
 
-
 This repository contains an experimental Grbl simulator that compiles the main Grbl source code into a wrapped executable for use on a computer. No Arduino required. When the executable is run, the user should be able to interact with the Grbl simulator as if connected to an Arduino with Grbl.
 
 *WARNING: Grbl Sim is under heavy development.* So many things may not work, or respond in ways unexpected. At the moment, this code is a proof-of-concept.
@@ -16,7 +15,6 @@ This repository contains an experimental Grbl simulator that compiles the main G
  - On Linux, hook it to a fake serial port (/dev/ttyFAKE) and use it to test your Grbl interface software:
 
   -  `> socat PTY,raw,link=/dev/ttyFAKE,echo=0 "EXEC:'./grbl_sim.exe -n -s step.out -b block.out',pty,raw,echo=0" `
-
  
 ### Realtime modifications:
 
@@ -30,12 +28,9 @@ This repository contains an experimental Grbl simulator that compiles the main G
 
  - *(You may need to make other modifications to the Makefile and some environment variables for your particular machine. Please share any modifications you find)*
 
-- Run `> make new` to compile Grbl Sim!  
-
-
+- Run `> make new` or `> make -f Makefile-Windows new` to compile Grbl Sim!
 
 ## Validator
 **NEW** 
 
 Run `gvalidate.exe GCODE_FILE` to validate that grbl will parse your GCODE with no errors.
-
