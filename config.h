@@ -21,15 +21,11 @@
 */
 
 #ifndef config_h
+
 #define __flash
 // Include grbl's system.h, not its config.h, 
 // because of circular dependency (config.h includes system.h which includes config.h).
 // This way ensures that the CPU Map and other config flags are set before they are needed
 #include "../system.h"
 
-
-
 #endif
-
-
-

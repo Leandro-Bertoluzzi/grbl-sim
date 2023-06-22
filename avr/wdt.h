@@ -20,6 +20,11 @@
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef wdt_h
+#define wdt_h
+
+#include <stdint.h>
+
 #define WDTCSR wdt
 #define WDP0 0
 #define WDP1 1
@@ -30,4 +35,6 @@
 #define WDIE 6
 #define WDIF 7
 
-uint16_t wdt;
+extern uint16_t wdt;
+
+#endif

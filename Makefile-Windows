@@ -16,20 +16,20 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 
-# PLATFORM   = WINDOWS
+PLATFORM   = WINDOWS
 # PLATFORM   = OSX
-PLATFORM   = LINUX
+# PLATFORM   = LINUX
 
 #The original grbl code, except those files overriden by sim
-GRBL_BASE_OBJECTS =   ../protocol.o ../planner.o ../settings.o ../print.o ../nuts_bolts.o  ../stepper.o ../gcode.o ../spindle_control.o ../motion_control.o ../limits.o ../coolant_control.o ../probe.o ../system.o ../jog.o 
+GRBL_BASE_OBJECTS =   ..\protocol.o ..\planner.o ..\settings.o ..\print.o ..\nuts_bolts.o  ..\stepper.o ..\gcode.o ..\spindle_control.o ..\motion_control.o ..\limits.o ..\coolant_control.o ..\probe.o ..\system.o ..\jog.o 
 # grbl files that have simulator overrrides 
-GRBL_OVERRIDE_OBJECTS =  ../main.o ../serial.o ../report.o
+GRBL_OVERRIDE_OBJECTS =  ..\main.o ..\serial.o ..\report.o
 
 #AVR interface simulation
-AVR_OBJECTS  = avr/interrupt.o avr/pgmspace.o  avr/io.o  avr/eeprom.o avr/wdt.o grbl_eeprom_extensions.o
+AVR_OBJECTS  = avr\interrupt.o avr\pgmspace.o  avr\io.o  avr\eeprom.o avr\wdt.o grbl_eeprom_extensions.o
 
 # Simulator Only Objects
-SIM_OBJECTS = main.o simulator.o serial.o util/delay.o util/floatunsisf.o platform_$(PLATFORM).o
+SIM_OBJECTS = main.o simulator.o serial.o util\delay.o util\floatunsisf.o platform_$(PLATFORM).o
 
 GRBL_SIM_OBJECTS = grbl_interface.o  $(GRBL_BASE_OBJECTS) $(GRBL_OVERRIDE_OBJECTS) $(SIM_OBJECTS) $(AVR_OBJECTS)
 GRBL_VAL_OBJECTS = validator.o overridden_report.o $(GRBL_BASE_OBJECTS) $(AVR_OBJECTS) system_declares.o
@@ -38,7 +38,7 @@ CLOCK      = 16000000
 SIM_EXE_NAME   = grbl_sim.exe
 VALIDATOR_NAME = gvalidate.exe
 FLAGS = -g -O3
-COMPILE    = $(CC) -Wall $(FLAGS) -DF_CPU=$(CLOCK)  -include config.h -I. -DPLAT_$(PLATFORM)
+COMPILE    = gcc -Wall $(FLAGS) -DF_CPU=$(CLOCK)  -include config.h -I. -DPLAT_$(PLATFORM)
 LINUX_LIBRARIES = -lrt -pthread
 OSX_LIBRARIES =
 WINDOWS_LIBRARIES =
@@ -49,10 +49,10 @@ all: main gvalidate clean_after
 new: clean main gvalidate clean_after
 
 clean:
-	rm -f $(SIM_EXE_NAME) $(GRBL_SIM_OBJECTS) $(VALIDATOR_NAME) $(GRBL_VAL_OBJECTS)
+	del $(SIM_EXE_NAME) $(GRBL_SIM_OBJECTS) $(VALIDATOR_NAME) $(GRBL_VAL_OBJECTS)
 
 clean_after:
-	rm -f ../*.o *.o avr/*.o util/*.o
+	del ..\*.o *.o avr\*.o util\*.o
 
 # file targets:
 main: $(GRBL_SIM_OBJECTS) 
@@ -66,14 +66,14 @@ gvalidate: $(GRBL_VAL_OBJECTS)
 %.o: %.c
 	$(COMPILE) -c $< -o $@
 
-../planner.o: ../planner.c
+..\planner.o: ..\planner.c
 	$(COMPILE) -include planner_inject_accessors.c -c $< -o $@
 
-../serial.o: ../serial.c
+..\serial.o: ..\serial.c
 	$(COMPILE) -include serial_hooks.h -c $< -o $@
 
-../main.o: ../main.c
+..\main.o: ..\main.c
 	$(COMPILE) -include rename_main.h -c $< -o $@
 
-overridden_report.o: ../report.c
+overridden_report.o: ..\report.c
 	$(COMPILE) -include rename_report_status_message.h -c $< -o $@
