@@ -48,6 +48,33 @@ void grbl_app_init(void){
 #endif
   pc_vect = interrupt_LIMIT_INT_vect;
 
+  // Simulate hardware pull-ups on limit and control input pins.
+  //
+  // On real AVR hardware, these pins are configured with internal pull-up resistors,
+  // so they read HIGH (1) by default when no switch is pressed. GRBL's limit and
+  // control pin detection logic was written with this assumption: it XORs the raw
+  // pin value against the pin mask to invert the polarity, so a HIGH idle pin
+  // correctly reports as "not triggered".
+  //
+  // In the simulator, all registers are zero-initialised (see avr/io.c), which means
+  // LIMIT_PIN and CONTROL_PIN start at 0 (all LOW). Without correction:
+  //   - limits_get_state()        reads 0 XOR LIMIT_MASK   → all limit switches appear triggered
+  //   - system_control_get_state() reads 0 XOR CONTROL_MASK → RESET bit appears active
+  //
+  // The active RESET control bit causes mc_reset() to be called every simulation
+  // cycle, which sets EXEC_RESET permanently. This in turn:
+  //   1. Corrupts serial output: serial_write() silently drops bytes when the TX
+  //      ring buffer is full and EXEC_RESET is set, which can strip individual
+  //      characters (e.g. the comma separator between MPos coordinates) from GRBL
+  //      status reports.
+  //   2. Forces GRBL into STATE_ALARM, after which it stops processing commands
+  //      and the simulator effectively freezes.
+  //
+  // The fix: pre-set LIMIT_PIN and CONTROL_PIN to their respective masks so that
+  // every bit reads HIGH, matching the hardware idle state with pull-ups active.
+  LIMIT_PIN   = LIMIT_MASK;
+  CONTROL_PIN = CONTROL_MASK;
+
   //setup local tacking vars
   next_print_time = args.step_time;
 
