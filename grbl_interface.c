@@ -48,6 +48,24 @@ void grbl_app_init(void){
 #endif
   pc_vect = interrupt_LIMIT_INT_vect;
 
+  // Simulate hardware pull-ups on input pins.
+  //
+  // All AVR I/O registers are zero-initialised in the simulator (avr/io.c), but
+  // GRBL's pin-reading routines XOR the raw register value against the pin mask
+  // to determine idle/triggered state — assuming active-low inputs with pull-ups.
+  // With every register at 0 (all LOW):
+  //   - limits_get_state()         → all limit switches appear triggered
+  //   - system_control_get_state() → RESET bit active → mc_reset() every cycle
+  //     → EXEC_RESET set permanently → serial_write() drops bytes silently
+  //     → STATE_ALARM, simulator freezes
+  //   - probe_get_state()          → probe appears permanently triggered (Pn:P)
+  //
+  // Pre-setting each PIN register to its mask makes every bit read HIGH,
+  // matching the hardware idle state.
+  LIMIT_PIN   = LIMIT_MASK;
+  CONTROL_PIN = CONTROL_MASK;
+  PROBE_PIN   = PROBE_MASK;
+
   //setup local tacking vars
   next_print_time = args.step_time;
 
